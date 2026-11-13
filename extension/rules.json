@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "responseHeaders": [
+        {
+          "header": "content-security-policy",
+          "operation": "append",
+          "value": "script-src 'none'"
+        }
+      ]
+    },
+    "condition": {
+      "regexFilter": "^https://([a-z0-9-]+\\.)?slack\\.com/(archives/[^?#]*|ssb/redirect/?|app_redirect/?)([?#].*)?$",
+      "isUrlFilterCaseSensitive": true,
+      "resourceTypes": [
+        "main_frame"
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "priority": 1,
+    "action": {
+      "type": "upgradeScheme"
+    },
+    "condition": {
+      "regexFilter": "^http://([a-z0-9-]+\\.)?slack\\.com/(archives/[^?#]*|ssb/redirect/?|app_redirect/?)([?#].*)?$",
+      "isUrlFilterCaseSensitive": true,
+      "resourceTypes": [
+        "main_frame"
+      ]
+    }
+  }
+]
