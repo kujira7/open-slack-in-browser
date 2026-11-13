@@ -3,11 +3,24 @@
   const launchPath = /^\/(?:archives\/[^?#]*|ssb\/redirect\/?|app_redirect\/?)$/;
   if (!launchPath.test(location.pathname)) return;
 
+  const candidates = Array.from(document.querySelectorAll("a[href]"), (link) => link.href);
+  const props = document.getElementById("props_node")?.getAttribute("data-props");
+  if (props) {
+    try {
+      // Slack renders its browser link from this JSON property. Read the data
+      // without executing its renderer or desktop-app launcher (or boot_data).
+      const webUrl = JSON.parse(props)?.webUrl;
+      if (typeof webUrl === "string" && webUrl) candidates.push(webUrl);
+    } catch {
+      // Invalid page data is not a destination; never evaluate it as JavaScript.
+    }
+  }
+
   const destinations = new Set();
-  for (const link of document.querySelectorAll("a[href]")) {
+  for (const candidate of candidates) {
     let url;
     try {
-      url = new URL(link.href);
+      url = new URL(candidate, location.href);
     } catch {
       continue;
     }

@@ -1,7 +1,8 @@
 # Privacy
 
-Open Slack in Browser reads anchor URLs on supported Slack launch pages to find Slack's
-browser destination. It navigates the same tab to that URL.
+Open Slack in Browser reads anchor URLs and `#props_node[data-props].webUrl` on supported
+Slack launch pages to find Slack's browser destination. It does not read the
+separate `boot_data` object, execute page scripts, or select `appUrl`/`teamUrl`. It navigates the same tab to that URL.
 
 The extension does not collect, retain, or transmit message content, credentials,
 cookies, browsing history, or analytics. It has no storage permission, background
