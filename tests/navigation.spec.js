@@ -146,6 +146,26 @@ test("relative and duplicate browser links preserve the query and fragment", asy
   await page.close();
 });
 
+for (const [name, source, target] of cases.filter(([name]) => ["channel", "thread reply"].includes(name))) {
+  test(`${name}: reads the browser destination from Slack's page props before rendering`, async () => {
+    // Reproduce the observed DOM structure, using invented workspace/message IDs.
+    // The saved user page and its boot_data (which can contain tokens) are not fixtures.
+    const webUrl = name === "channel" ? "/messages/C123?skip_today=1" : target;
+    const props = { webUrl, appUrl: "slack://channel?team=T123&id=C123", teamUrl: "https://example-team.slack.com/" };
+    pages.set(source, {
+      body: landing(`<div id="props_node" data-props="${escapeAttribute(JSON.stringify(props))}"></div>`),
+    });
+    pages.set(target, { body: "<h1>Exact browser destination</h1>" });
+    const page = await context.newPage();
+    await page.setContent(browserLink(source));
+    await page.getByRole("link").click();
+    await expect(page).toHaveURL(target);
+    await expect(page.getByRole("heading")).toHaveText("Exact browser destination");
+    expect(requests.some((url) => url.endsWith("/launch.js") || url.endsWith("/launch-fired"))).toBe(false);
+    await page.close();
+  });
+}
+
 test("unrelated Slack pages keep working", async () => {
   for (const pathname of ["/messages/C123", "/client/T123/C123", "/signin", "/app_redirect_other", "/ssb/redirect_other"]) {
     const url = `https://example-team.slack.com${pathname}`;
@@ -173,6 +193,26 @@ test("missing, ambiguous and untrusted browser links never select an arbitrary d
   ];
   for (const links of candidates) {
     pages.set(source, { body: landing(links) });
+    const page = await context.newPage();
+    await page.goto(source);
+    await expect(page.getByRole("alert")).toContainText("could not find a unique browser link");
+    expect(page.url()).toBe(source);
+    await page.close();
+  }
+});
+
+test("page props cannot select an unsafe destination or fall back to teamUrl", async () => {
+  const source = "https://example-team.slack.com/archives/C123/p1700000000000001";
+  const invalidProps = [
+    "not JSON", "null", "[]", JSON.stringify({ webUrl: 42 }),
+    JSON.stringify({ teamUrl: "https://example-team.slack.com/messages/C999" }),
+    ...["https://evil.example/messages/C123", "javascript:alert(1)",
+      "https://example-team.slack.com.evil.example/messages/C123", source,
+      "https://user:pass@example-team.slack.com/messages/C123",
+    ].map((webUrl) => JSON.stringify({ webUrl })),
+  ];
+  for (const props of invalidProps) {
+    pages.set(source, { body: landing(`<div id="props_node" data-props="${escapeAttribute(props)}"></div>`) });
     const page = await context.newPage();
     await page.goto(source);
     await expect(page.getByRole("alert")).toContainText("could not find a unique browser link");

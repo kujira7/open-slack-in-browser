@@ -30,8 +30,10 @@ navigation; no Windows settings or existing site permissions need resetting.
 | Existing `/messages/…` and `app.slack.com/client/…` links | Leave them unchanged. |
 
 The extension does **not** replace `/archives/` with `/messages/`, construct IDs,
-or guess where an app/channel name should lead. It follows the actual HTTPS link
-Slack includes in the page, preserving its full path, query, and fragment. That
+or guess where an app/channel name should lead. It follows the browser destination Slack includes in the page, preserving its
+full path, query, and fragment. The destination can be a rendered anchor or the
+`webUrl` property in the JSON attribute `#props_node[data-props]`, which Slack
+uses to render that anchor. Relative URLs are resolved against the current page. That
 link must point to a Slack workspace's `/messages/…` path or
 `https://app.slack.com/client/…`. Multiple copies of the same link are fine;
 multiple different destinations produce an error instead of choosing one.
@@ -43,7 +45,7 @@ For the launch-page paths above, a static `declarativeNetRequest` rule appends
 This prevents the page's inline and external launch scripts from executing.
 It adds a restriction without replacing Slack's existing security policy.
 
-An isolated content script then reads the server-rendered browser link and
+An isolated content script then reads the browser destination from the page HTML and
 navigates to it with `location.replace`. It runs independently of the page's
 scripts. No click-handler timing race or background service worker is needed.
 The destination web client and sign-in paths are outside the rule and can run
@@ -53,8 +55,9 @@ their scripts normally. HTTP server redirects are also followed normally.
 
 - You still need to be signed in and have access to the conversation. The
   extension does not bypass authentication, workspace membership, or retention.
-- This depends on Slack serving a browser link in the launch-page HTML. If
-  Slack changes that page, requires page JavaScript to generate the link, or
+- This depends on Slack including a browser link or `data-props.webUrl` in the
+  launch-page HTML. If Slack changes those fields, requires a script/API call to
+  obtain the destination, or
   serves a sign-in/client UI directly at a launch-page path, the extension may
   show an error or prevent that page from working. Disable it and reload in that
   case. It does not silently fall back to a homepage or a guessed channel.
