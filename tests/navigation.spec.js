@@ -25,12 +25,12 @@ const landing = (links) => `<!doctype html><html><head>
   </head><body><main data-qa="ssb_redirect_loading_page">${links}</main></body></html>`;
 
 test.beforeAll(async () => {
-  temporaryDirectory = await mkdtemp(path.join(tmpdir(), "slack-web-test-"));
+  temporaryDirectory = await mkdtemp(path.join(tmpdir(), "open-slack-in-browser-test-"));
   const keyPath = path.join(temporaryDirectory, "key.pem");
   const certPath = path.join(temporaryDirectory, "cert.pem");
   execFileSync("openssl", [
     "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "1",
-    "-keyout", keyPath, "-out", certPath, "-subj", "/CN=slack-web-test.invalid",
+    "-keyout", keyPath, "-out", certPath, "-subj", "/CN=open-slack-in-browser-test.invalid",
   ], { stdio: "ignore" });
   server = createServer({ key: await readFile(keyPath), cert: await readFile(certPath) }, (req, res) => {
     const url = `https://${req.headers.host}${req.url}`;
@@ -153,7 +153,7 @@ test("unrelated Slack pages keep working", async () => {
     const page = await context.newPage();
     await page.goto(url);
     expect(await page.evaluate(() => window.webClientLoaded)).toBe(true);
-    await expect(page.locator("#slack-web-status")).toHaveCount(0);
+    await expect(page.locator("#open-slack-in-browser-status")).toHaveCount(0);
     await page.close();
   }
 });

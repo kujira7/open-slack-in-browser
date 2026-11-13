@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Slack Web",
+  "name": "Open Slack in Browser",
   "version": "0.1.0",
   "description": "Open Slack message and channel links in the browser using Slack’s own browser link.",
   "permissions": [

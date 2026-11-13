@@ -1,4 +1,4 @@
-# Slack Web
+# Open Slack in Browser
 
 Open Slack message and channel links in your browser with one click.
 
@@ -11,7 +11,7 @@ or runtime dependencies. Not affiliated with Slack or Salesforce.
 2. Select **Load unpacked** and choose this project's **`extension`** directory.
 3. Allow the extension to run on the Slack workspaces you use.
 4. Disable or uninstall **Open Slack in Browser, not App**, earlier versions of
-   Slack Web, and other rules that redirect the same Slack links.
+   Open Slack in Browser, and other rules that redirect the same Slack links.
 5. Click a Slack message or channel link from another page.
 
 Keep the extension directory in place. After updating its files, click **Reload**

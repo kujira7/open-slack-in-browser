@@ -32,10 +32,10 @@
   // The launch page's scripts are blocked. Make a changed/missing browser link
   // visible instead of leaving the user watching an indefinite loading screen.
   const notice = document.createElement("p");
-  notice.id = "slack-web-status";
+  notice.id = "open-slack-in-browser-status";
   notice.setAttribute("role", "alert");
   notice.textContent =
-    "Slack Web could not find a unique browser link on this page. " +
+    "Open Slack in Browser could not find a unique browser link on this page. " +
     "Disable this extension and reload to use Slack's normal sign-in or navigation.";
   (document.body || document.documentElement).prepend(notice);
 })();

@@ -1,6 +1,6 @@
 # Privacy
 
-Slack Web reads anchor URLs on supported Slack launch pages to find Slack's
+Open Slack in Browser reads anchor URLs on supported Slack launch pages to find Slack's
 browser destination. It navigates the same tab to that URL.
 
 The extension does not collect, retain, or transmit message content, credentials,
