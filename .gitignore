@@ -3,3 +3,4 @@ test-results/
 playwright-report/
 .agents/
 *.zip
+extension/_metadata/
